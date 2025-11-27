@@ -26,6 +26,7 @@
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/swagger": "^11.2.3",
     "@sequelize/postgres": "^7.0.0-alpha.47",
     "jimp": "^1.6.0",
     "multer": "^2.0.2",
