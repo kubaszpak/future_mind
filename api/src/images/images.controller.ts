@@ -1,10 +1,15 @@
 import {
   Controller,
   Post,
+  Get,
+  Param,
+  Query,
   UploadedFile,
   Body,
   UseInterceptors,
+  NotFoundException,
 } from '@nestjs/common';
+
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImagesService } from './images.service';
 import { createS3Client } from '../s3.config';
@@ -16,6 +21,35 @@ import type { Express } from 'express';
 @Controller('images')
 export class ImagesController {
   constructor(private readonly imagesService: ImagesService) {}
+
+  @Get(':id')
+  async getImageById(@Param('id') id: number) {
+    const image = await this.imagesService.findImageById(id);
+    if (!image) {
+      throw new NotFoundException('Image not found');
+    }
+    return image;
+  }
+
+  @Get()
+  async getImages(
+    @Query('title') title?: string,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
+    const { rows, count } = await this.imagesService.findAllImages(
+      title,
+      page,
+      limit,
+    );
+    return {
+      total: count,
+      page,
+      limit,
+      images: rows,
+    };
+  }
+
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(
