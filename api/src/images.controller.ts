@@ -10,7 +10,7 @@ import { ImagesService } from './images.service';
 import { createS3Client } from './s3.config';
 import { v4 as uuidv4 } from 'uuid';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
-import { Jimp } from 'jimp';
+import { resizeImageBuffer } from './image-resize.helper';
 import type { Express } from 'express';
 
 @Controller('images')
@@ -33,17 +33,11 @@ export class ImagesController {
     const bucket = process.env.S3_BUCKET || 'images-bucket';
     const key = `${uuidv4()}-${file.originalname}`;
 
-    const imageJimp = await Jimp.read(file.buffer);
-    imageJimp.resize({ w: Number(width), h: Number(height) });
-
-    const resizedBuffer = await imageJimp.getBuffer(
-      file.mimetype as
-        | 'image/bmp'
-        | 'image/tiff'
-        | 'image/x-ms-bmp'
-        | 'image/gif'
-        | 'image/jpeg'
-        | 'image/png',
+    const resizedBuffer = await resizeImageBuffer(
+      file.buffer,
+      Number(width),
+      Number(height),
+      file.mimetype,
     );
     await s3.send(
       new PutObjectCommand({
