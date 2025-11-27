@@ -8,7 +8,7 @@ async function bootstrap() {
   console.log('App starting...');
   await sequelize.sync({ alter: true });
   const app = await NestFactory.create(AppModule);
-  app.use((req, res, next) => {
+  app.use((req, _, next) => {
     console.log(`Incoming request: ${req.method} ${req.url}`);
     next();
   });
