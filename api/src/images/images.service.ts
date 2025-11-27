@@ -7,7 +7,6 @@ export class ImagesService {
   async createImage(data: Partial<Image>): Promise<Image> {
     return Image.create(data);
   }
-
   async findAllImages(
     filter: string | undefined,
     page: number,
